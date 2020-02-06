@@ -35,3 +35,4 @@ const url = `http://www.dell-lee.com/typescript/demo.html?secret=${secret}`;
 const analyzer = DellAnalyzer.getInstance();
 // const analyzer = new LeeAnalyzer();
 new Crowler(url, analyzer);
+console.log('2');
