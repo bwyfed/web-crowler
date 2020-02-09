@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import superagent from 'superagent';
-import DellAnalyzer from './dellAnalyzer';
+import DellAnalyzer from './analyzer';
 // import LeeAnalyzer from './leeAnalyzer';
 
 export interface Analyzer {
@@ -9,7 +9,7 @@ export interface Analyzer {
 }
 
 class Crowler {
-  private filePath = path.resolve(__dirname, '../data/course.json');
+  private filePath = path.resolve(__dirname, '../../data/course.json');
 
   private async getRawHtml() {
     const result = await superagent.get(this.url);
