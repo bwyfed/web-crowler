@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import Crowler from './crowler';
 import DellAnalyzer from './dellAnalyzer';
+import fs from 'fs';
+import path from 'path';
 
 // 问题1：express 库的类型定义文件 .d.ts 文件类型描述不准确
 interface RequestWithBody extends Request {
@@ -17,6 +19,8 @@ router.get('/', (req: RequestWithBody, res: Response) => {
     res.send(`
       <html>
         <body>
+          <a href="/getData">爬取内容</a>
+          <a href="/showData">展示内容</a>
           <a href="/logout">退出</a>
         </body>
       </html>
@@ -57,16 +61,31 @@ router.post('/login', (req: RequestWithBody, res: Response) => {
   }
 });
 
-router.post('/getData', (req: RequestWithBody, res: Response) => {
-  const { password, username } = req.body;
-  if (password === '123') {
+router.get('/getData', (req: RequestWithBody, res: Response) => {
+  const isLogin = req.session ? req.session.login : false;
+  if (isLogin) {
     const secret = 'secretKey';
     const url = `http://www.dell-lee.com/typescript/demo.html?secret=${secret}`;
     const analyzer = DellAnalyzer.getInstance();
     new Crowler(url, analyzer);
     res.send('getData success!');
   } else {
-    res.send(`password error!`);
+    res.send('请登录后爬取内容');
+  }
+});
+
+router.get('/showData', (req: RequestWithBody, res: Response) => {
+  const isLogin = req.session ? req.session.login : false;
+  if (isLogin) {
+    try {
+      const position = path.resolve(__dirname, '../data/course.json');
+      const result = fs.readFileSync(position, 'utf-8');
+      res.json(JSON.parse(result));
+    } catch (e) {
+      res.send('尚未爬取到内容');
+    }
+  } else {
+    res.send('请登录后查看内容');
   }
 });
 
