@@ -12,16 +12,34 @@ interface RequestWithBody extends Request {
 const router = Router();
 
 router.get('/', (req: RequestWithBody, res: Response) => {
-  res.send(`
-    <html>
-      <body>
-        <form method="post" action="/login">
-          <input type="password" name="password" />
-          <button type="submit">登录</button>
-        </form>
-      </body>
-    </html>
+  const isLogin = req.session ? req.session.login : false;
+  if (isLogin) {
+    res.send(`
+      <html>
+        <body>
+          <a href="/logout">退出</a>
+        </body>
+      </html>
+    `);
+  } else {
+    res.send(`
+      <html>
+        <body>
+          <form method="post" action="/login">
+            <input type="password" name="password" />
+            <button type="submit">登录</button>
+          </form>
+        </body>
+      </html>
   `);
+  }
+});
+
+router.get('/logout', (req: Request, res: Response) => {
+  if (req.session) {
+    req.session.login = undefined;
+  }
+  res.redirect('/');
 });
 
 router.post('/login', (req: RequestWithBody, res: Response) => {
