@@ -15,13 +15,28 @@ router.get('/', (req: RequestWithBody, res: Response) => {
   res.send(`
     <html>
       <body>
-        <form method="post" action="/getData">
+        <form method="post" action="/login">
           <input type="password" name="password" />
-          <button type="submit">提交</button>
+          <button type="submit">登录</button>
         </form>
       </body>
     </html>
   `);
+});
+
+router.post('/login', (req: RequestWithBody, res: Response) => {
+  const { password } = req.body;
+  const isLogin = req.session ? req.session.login : false;
+  if (isLogin) {
+    res.send('已经登录过');
+  } else {
+    if (password === '123' && req.session) {
+      req.session.login = true;
+      res.send('登录成功');
+    } else {
+      res.send('登录失败');
+    }
+  }
 });
 
 router.post('/getData', (req: RequestWithBody, res: Response) => {
@@ -33,7 +48,7 @@ router.post('/getData', (req: RequestWithBody, res: Response) => {
     new Crowler(url, analyzer);
     res.send('getData success!');
   } else {
-    res.send(`${req.teacherName} password error!`);
+    res.send(`password error!`);
   }
 });
 
