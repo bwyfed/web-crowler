@@ -2,9 +2,16 @@ import { Router, Request, Response } from 'express';
 import Crowler from './crowler';
 import DellAnalyzer from './dellAnalyzer';
 
+// 问题1：express 库的类型定义文件 .d.ts 文件类型描述不准确
+interface RequestWithBody extends Request {
+  body: {
+    [key: string]: string | undefined;
+  };
+}
+
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', (req: RequestWithBody, res: Response) => {
   res.send(`
     <html>
       <body>
@@ -17,9 +24,8 @@ router.get('/', (req: Request, res: Response) => {
   `);
 });
 
-router.post('/getData', (req: Request, res: Response) => {
-  console.log(req.body);
-  const { password } = req.body;
+router.post('/getData', (req: RequestWithBody, res: Response) => {
+  const { password, username } = req.body;
   if (password === '123') {
     const secret = 'secretKey';
     const url = `http://www.dell-lee.com/typescript/demo.html?secret=${secret}`;
@@ -27,7 +33,7 @@ router.post('/getData', (req: Request, res: Response) => {
     new Crowler(url, analyzer);
     res.send('getData success!');
   } else {
-    res.send('password error!');
+    res.send(`${req.teacherName} password error!`);
   }
 });
 
